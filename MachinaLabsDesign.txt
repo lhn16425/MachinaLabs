@@ -1,0 +1,90 @@
+Data Model: (see MachinaLabsDesign.png for the ERD diagram)
+----------
+
+User
+- ID
+- Name
+- Password
+- RoleID
+
+Role
+- ID
+- Description ("Engineer", "Shift Supervisor", "Department Head")
+- AccessBitmask (bit mask of all allowed operations)
+
+Project
+- ID
+- Description
+- CellID
+- UserID
+- IsActive
+- Status
+- CADModel			// could be plain text, base64, binary blob, or a URI
+- ConfigurationFile // could be plain text or a URI
+- x1
+- x2
+- x3
+- x4
+- x5
+- x6
+- x7
+- x8
+- x9
+- x10
+- CompletionDate
+
+Cell
+- ID
+- Description
+
+Access
+- ID (bit value: 1, 2, 4, 8, etc.), each value represents one API operation (endpoint)
+- Description
+
+================================================================================
+
+API:
+---
+
+POST /api/login
+- use Basic Authentication (not secure but use for simplicity, better with full OAuth implementation)
+- returns an access token with expiration time for subsequent calls to the API
+- before the access token expires, caller needs to call the refresh endpoint to
+  get a new access token
+- all other API calls requires the access token passed in as bearer token
+  
+POST /api/refresh
+- returns an access token with expiration time
+
+POST /api/project/create
+{
+  "CADModel": "...",
+  "ConfigurationFile": "...",
+  "x1": "...",
+  ...
+}
+- returns project ID
+
+POST /api/project/<project ID>/start
+{
+  "CellID": "..."
+}
+
+POST /api/project/<project ID>/finish
+
+POST /api/project/<project ID>/update
+{
+  "x1": "...",
+  "x2": "...",
+  ...
+}
+
+GET /api/project/<project ID>/get
+
+GET /api/project/active/status
+
+GET /api/factory/active-engineer
+
+GET /api/project/completed?completionDateFrom=XXX&completionDateTo=YYY
+
+GET /api/factory/utilization
